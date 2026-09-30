@@ -32,6 +32,7 @@
 import { onMounted, ref } from 'vue'
 
 import { fetchJson } from '@/api/client'
+import { MODULES, emptyModuleRows } from '@/config/app'
 
 type Overview = {
   cards: { label: string; value: number }[]
@@ -43,12 +44,22 @@ const moduleRows = ref<Overview['modules']>([])
 
 onMounted(async () => {
   try {
-    const payload = await fetchJson<Overview>('/api/overview')
+    const payload = await fetchJson<Overview>('/overview')
     cards.value = payload.cards
-    moduleRows.value = payload.modules
+    // 以唯一模块清单为准对齐服务端数据：缺失的模块补 0，保证数量与左侧导航一致。
+    const byName = new Map(payload.modules.map((row) => [row.name, row]))
+    moduleRows.value = MODULES.map(
+      (mod) =>
+        byName.get(mod.label) ?? {
+          name: mod.label,
+          created: 0,
+          pending: 0,
+          abnormal: 0,
+        },
+    )
   } catch {
-    cards.value = [{"label": "业务模块", "value": 0}, {"label": "今日新增", "value": 0}]
-    moduleRows.value = [{"name": "锅炉设备", "created": 0, "pending": 0, "abnormal": 0}, {"name": "压力容器", "created": 0, "pending": 0, "abnormal": 0}, {"name": "压力管道", "created": 0, "pending": 0, "abnormal": 0}, {"name": "起重机械", "created": 0, "pending": 0, "abnormal": 0}, {"name": "电梯设备", "created": 0, "pending": 0, "abnormal": 0}, {"name": "场内机动车辆", "created": 0, "pending": 0, "abnormal": 0}, {"name": "点检计划", "created": 0, "pending": 0, "abnormal": 0}, {"name": "点检记录", "created": 0, "pending": 0, "abnormal": 0}, {"name": "润滑保养", "created": 0, "pending": 0, "abnormal": 0}, {"name": "定期检验", "created": 0, "pending": 0, "abnormal": 0}, {"name": "检验报告", "created": 0, "pending": 0, "abnormal": 0}, {"name": "隐患登记", "created": 0, "pending": 0, "abnormal": 0}, {"name": "整改闭环", "created": 0, "pending": 0, "abnormal": 0}, {"name": "使用登记", "created": 0, "pending": 0, "abnormal": 0}, {"name": "作业人员", "created": 0, "pending": 0, "abnormal": 0}, {"name": "备件器材", "created": 0, "pending": 0, "abnormal": 0}, {"name": "维保合同", "created": 0, "pending": 0, "abnormal": 0}, {"name": "费用结算", "created": 0, "pending": 0, "abnormal": 0}]
+    cards.value = [{ label: '业务模块', value: MODULES.length }, { label: '今日新增', value: 0 }]
+    moduleRows.value = emptyModuleRows()
   }
 })
 </script>

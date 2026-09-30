@@ -59,6 +59,8 @@ pnpm-debug.log*
 .env.*.local
 *.env
 !.env.example
+# 前端唯一的提交版配置（dev 与 build 共用），纳入版本管理，新同事克隆即可启动
+!frontend/.env
 
 # ===== 测试覆盖率 =====
 coverage/

@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/operator'
+const ENDPOINT = '/operator'
 const columns = ["人员编号", "人员姓名", "所属单位", "作业项目", "证件编号", "有效期至", "复审日期", "人员状态"]
 const actions = ["登记取证", "标记过期", "办理离岗"]
 const statuses = ["待取证", "在岗持证", "证件过期", "已离岗"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/elevator'
+const ENDPOINT = '/elevator'
 const columns = ["电梯编号", "电梯名称", "载重规格", "层站数量", "使用场所", "投用日期", "下次检验日", "电梯状态"]
 const actions = ["办理投用", "安排检修", "停用电梯"]
 const statuses = ["待投用", "正常运行", "停梯检修", "已停用"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

@@ -1,7 +1,18 @@
 <template>
-  <div class="app-shell">
+  <div v-if="!cfg.config" class="config-error" role="alert">
+    <h2>前端配置缺失，无法启动</h2>
+    <p>请补齐下列配置后点击“重新加载”。当前不会使用任何旧值。</p>
+    <ul>
+      <li v-for="(issue, index) in cfg.issues" :key="issue.key + index" class="config-error-line">
+        <span v-if="issue.line" class="config-error-where">.env 第 {{ issue.line }} 行：</span>
+        {{ issue.reason }}
+      </li>
+    </ul>
+    <button class="btn primary" type="button" @click="retry">重新加载配置</button>
+  </div>
+  <div v-else class="app-shell">
     <aside class="app-side">
-      <h1 class="app-title">特种设备点检运维平台</h1>
+      <h1 class="app-title">{{ cfg.config.appName }}</h1>
       <nav class="nav-list">
         <RouterLink v-for="item in navItems" :key="item.path" :to="item.path" class="nav-item">
           {{ item.label }}
@@ -20,8 +31,12 @@
 
 <script setup lang="ts">
 import { useSessionStore } from '@/stores/session'
+import { buildNavItems } from '@/config/app'
+import { useAppConfig } from '@/config/runtime'
 
 const store = useSessionStore()
+const { state: cfg, retry } = useAppConfig()
 
-const navItems = [{ label: "运营概览", path: "/" }, { label: "锅炉设备", path: "/boiler" }, { label: "压力容器", path: "/vessel" }, { label: "压力管道", path: "/pressurepipe" }, { label: "起重机械", path: "/crane" }, { label: "电梯设备", path: "/elevator" }, { label: "场内机动车辆", path: "/forklift" }, { label: "点检计划", path: "/plan" }, { label: "点检记录", path: "/spotcheck" }, { label: "润滑保养", path: "/lubricate" }, { label: "定期检验", path: "/inspect" }, { label: "检验报告", path: "/report" }, { label: "隐患登记", path: "/hazard" }, { label: "整改闭环", path: "/rectify" }, { label: "使用登记", path: "/register" }, { label: "作业人员", path: "/operator" }, { label: "备件器材", path: "/spare" }, { label: "维保合同", path: "/contract" }, { label: "费用结算", path: "/settle" }]
+// 导航项由唯一模块清单派生，反复初始化返回同一份，不会出现重复项。
+const navItems = buildNavItems()
 </script>

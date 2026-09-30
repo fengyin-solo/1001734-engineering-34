@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+import { basePath } from '@/config/runtime'
 import Dashboard from '@/views/Dashboard.vue'
 const Boiler = () => import('@/views/boiler/index.vue')
 const Vessel = () => import('@/views/vessel/index.vue')
@@ -21,7 +22,8 @@ const Contract = () => import('@/views/contract/index.vue')
 const Settle = () => import('@/views/settle/index.vue')
 
 const router = createRouter({
-  history: createWebHistory(),
+  // 部署到子路径时取唯一配置里的 VITE_BASE_PATH；路由 path 本身保持不变。
+  history: createWebHistory(basePath()),
   routes: [
     { path: '/', name: 'dashboard', component: Dashboard },
     { path: '/boiler', name: 'boiler', component: Boiler },

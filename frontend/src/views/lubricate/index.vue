@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/lubricate'
+const ENDPOINT = '/lubricate'
 const columns = ["保养单号", "保养设备", "润滑点位", "油品规格", "加注用量", "保养人员", "保养日期", "保养状态"]
 const actions = ["安排保养", "确认完成", "标记延期"]
 const statuses = ["待保养", "保养中", "已完成", "已延期"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

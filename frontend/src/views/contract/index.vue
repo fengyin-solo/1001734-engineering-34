@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/contract'
+const ENDPOINT = '/contract'
 const columns = ["合同编号", "服务单位", "维保设备", "合同金额", "服务期限", "签订人员", "到期日期", "合同状态"]
 const actions = ["确认签订", "标记到期", "终止合同"]
 const statuses = ["待签订", "履行中", "已到期", "已终止"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {
