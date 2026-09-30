@@ -9,5 +9,10 @@ services:
     build: ./frontend
     ports:
       - "5173:5173"
+    environment:
+      # 容器内不走 127.0.0.1，代理目标指向 compose 服务名；键名与 frontend/.env 同源，
+      # 进程环境变量优先，可在不改 .env 的情况下覆盖。
+      - VITE_PROXY_TARGET=http://backend:8000
+      - VITE_DEV_PORT=5173
     depends_on:
       - backend

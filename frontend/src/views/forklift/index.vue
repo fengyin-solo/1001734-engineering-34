@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/forklift'
+const ENDPOINT = '/forklift'
 const columns = ["车辆编号", "车辆名称", "动力方式", "额定载重", "使用场所", "投用日期", "下次检验日", "车辆状态"]
 const actions = ["办理投用", "安排检修", "报废车辆"]
 const statuses = ["待投用", "在用运行", "停用检修", "已报废"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

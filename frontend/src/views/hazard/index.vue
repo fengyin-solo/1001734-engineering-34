@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/hazard'
+const ENDPOINT = '/hazard'
 const columns = ["隐患编号", "涉及设备", "隐患类型", "隐患描述", "严重等级", "发现日期", "登记人员", "隐患状态"]
 const actions = ["确认定级", "提交闭环", "挂起隐患"]
 const statuses = ["待定级", "已定级", "整改中", "已闭环"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

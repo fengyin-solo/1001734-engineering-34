@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/settle'
+const ENDPOINT = '/settle'
 const columns = ["结算单号", "关联合同", "费用类别", "应付金额", "已付金额", "审核人员", "付款日期", "结算状态"]
 const actions = ["提交审核", "确认付款", "驳回结算"]
 const statuses = ["待核算", "待审核", "已付款", "已驳回"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

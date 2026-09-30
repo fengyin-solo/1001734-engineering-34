@@ -59,6 +59,8 @@ pnpm-debug.log*
 .env.*.local
 *.env
 !.env.example
+# frontend/.env 是前端唯一生效的配置（无密钥，随仓库分发），例外放行
+!frontend/.env
 
 # ===== 测试覆盖率 =====
 coverage/

@@ -17,7 +17,7 @@
         <tr><th>业务模块</th><th>今日新增</th><th>待处理</th><th>异常量</th></tr>
       </thead>
       <tbody>
-        <tr v-for="row in moduleRows" :key="row.name">
+        <tr v-for="row in moduleRows" :key="row.key">
           <td>{{ row.name }}</td>
           <td>{{ row.created }}</td>
           <td>{{ row.pending }}</td>
@@ -32,23 +32,54 @@
 import { onMounted, ref } from 'vue'
 
 import { fetchJson } from '@/api/client'
+import { MODULES, getModuleCount } from '@/config/modules'
 
 type Overview = {
   cards: { label: string; value: number }[]
   modules: { name: string; created: number; pending: number; abnormal: number }[]
 }
 
+type ModuleRow = { key: string; name: string; created: number; pending: number; abnormal: number }
+
 const cards = ref<Overview['cards']>([])
-const moduleRows = ref<Overview['modules']>([])
+// 模块行以统一登记表为骨架：左侧导航与本页模块数始终是同一份，
+// 接口缺失或返回多/少模块都不改变行数与顺序。
+const moduleRows = ref<ModuleRow[]>(
+  MODULES.map((module) => ({
+    key: module.key,
+    name: module.label,
+    created: 0,
+    pending: 0,
+    abnormal: 0,
+  })),
+)
+
+function fallbackCards() {
+  return [
+    { label: '业务模块', value: getModuleCount() },
+    { label: '今日新增', value: 0 },
+    { label: '待处理', value: 0 },
+    { label: '异常量', value: 0 },
+  ]
+}
 
 onMounted(async () => {
   try {
-    const payload = await fetchJson<Overview>('/api/overview')
-    cards.value = payload.cards
-    moduleRows.value = payload.modules
+    const payload = await fetchJson<Overview>('/overview')
+    cards.value = payload.cards.length ? payload.cards : fallbackCards()
+    const byKey = new Map(payload.modules.map((row) => [row.name, row]))
+    moduleRows.value = MODULES.map((module) => {
+      const remote = byKey.get(module.key)
+      return {
+        key: module.key,
+        name: module.label,
+        created: remote?.created ?? 0,
+        pending: remote?.pending ?? 0,
+        abnormal: remote?.abnormal ?? 0,
+      }
+    })
   } catch {
-    cards.value = [{"label": "业务模块", "value": 0}, {"label": "今日新增", "value": 0}]
-    moduleRows.value = [{"name": "锅炉设备", "created": 0, "pending": 0, "abnormal": 0}, {"name": "压力容器", "created": 0, "pending": 0, "abnormal": 0}, {"name": "压力管道", "created": 0, "pending": 0, "abnormal": 0}, {"name": "起重机械", "created": 0, "pending": 0, "abnormal": 0}, {"name": "电梯设备", "created": 0, "pending": 0, "abnormal": 0}, {"name": "场内机动车辆", "created": 0, "pending": 0, "abnormal": 0}, {"name": "点检计划", "created": 0, "pending": 0, "abnormal": 0}, {"name": "点检记录", "created": 0, "pending": 0, "abnormal": 0}, {"name": "润滑保养", "created": 0, "pending": 0, "abnormal": 0}, {"name": "定期检验", "created": 0, "pending": 0, "abnormal": 0}, {"name": "检验报告", "created": 0, "pending": 0, "abnormal": 0}, {"name": "隐患登记", "created": 0, "pending": 0, "abnormal": 0}, {"name": "整改闭环", "created": 0, "pending": 0, "abnormal": 0}, {"name": "使用登记", "created": 0, "pending": 0, "abnormal": 0}, {"name": "作业人员", "created": 0, "pending": 0, "abnormal": 0}, {"name": "备件器材", "created": 0, "pending": 0, "abnormal": 0}, {"name": "维保合同", "created": 0, "pending": 0, "abnormal": 0}, {"name": "费用结算", "created": 0, "pending": 0, "abnormal": 0}]
+    cards.value = fallbackCards()
   }
 })
 </script>

@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/rectify'
+const ENDPOINT = '/rectify'
 const columns = ["整改单号", "关联隐患", "整改措施", "责任单位", "整改期限", "完成日期", "验收人员", "整改状态"]
 const actions = ["下发整改", "提交验收", "确认闭环"]
 const statuses = ["待下发", "整改中", "待验收", "已闭环"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

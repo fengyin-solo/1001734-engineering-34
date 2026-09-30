@@ -1,8 +1,19 @@
-/** 统一请求封装：拼后端地址、抛网络错误、给页脚留一句可读的说明。 */
-const API_BASE = import.meta.env.VITE_API_BASE ?? ''
+/**
+ * 统一请求封装：接口前缀从全站唯一配置取，抛网络错误，给页脚留一句可读的说明。
+ *
+ * 入参 path 不再带 /api 前缀：前缀只在配置里维护一份（VITE_API_PREFIX），
+ * 开发态由 dev server 按此前缀代理，生产态由同前缀反向代理转发。
+ */
+import { buildApiUrl } from '@/config/parser'
+import { useConfig } from '@/config/runtime'
+
+export function apiUrl(path: string): string {
+  const { requireConfig } = useConfig()
+  return buildApiUrl(requireConfig(), path)
+}
 
 export function request(path: string, init?: RequestInit): Promise<Response> {
-  const url = path.startsWith('http') ? path : `${API_BASE}${path}`
+  const url = apiUrl(path)
   return fetch(url, {
     headers: { 'Content-Type': 'application/json' },
     ...init,

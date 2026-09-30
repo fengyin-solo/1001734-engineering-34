@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/spare'
+const ENDPOINT = '/spare'
 const columns = ["备件编号", "备件名称", "适用设备", "结存数量", "计量单位", "存放库位", "保管人员", "备件状态"]
 const actions = ["冻结备件", "解冻备件", "登记耗尽"]
 const statuses = ["正常可用", "储备不足", "已冻结", "已耗尽"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {

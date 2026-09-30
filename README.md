@@ -10,10 +10,12 @@
 ```text
 .
 ├── frontend/                 Vue 3 + Vite + TypeScript 前端
+│   ├── .env                  前端唯一配置（端口、代理目标、接口前缀、部署子路径）
 │   ├── src/views/            每个业务模块一个页面
 │   ├── src/api/              统一请求封装
+│   ├── src/config/           配置解析/校验、业务模块登记（导航与概览同源）
 │   ├── src/stores/           会话与筛选状态
-│   └── vite.config.ts        dev server 配置（open: false）
+│   └── vite.config.ts        从 .env 读取 dev server / 代理 / base（open: false）
 ├── backend/                  FastAPI（Python） 后端
 │   ├── app/routers/          每个业务模块一组接口
 │   ├── app/services/         业务规则与状态流转
@@ -44,6 +46,30 @@ npm run dev
 
 前端默认监听 `http://127.0.0.1:5173/`，dev server 不会自动打开浏览器，
 需要自己访问。`/api` 由 vite 代理到后端 `http://127.0.0.1:8000`。
+
+#### 前端配置（只认 `frontend/.env` 这一份）
+
+换端口、换后端地址、换部署子路径，都只改 `frontend/.env`，不要再改代码：
+
+| 键名 | 含义 | 示例 |
+| --- | --- | --- |
+| `VITE_APP_NAME` | 应用名称（页面标题、侧边栏） | `特种设备点检运维平台` |
+| `VITE_API_PREFIX` | 接口统一前缀，开发态按此前缀代理、生产态按此前缀拼接 | `/api` |
+| `VITE_BASE` | 部署子路径；根路径部署填 `/`，子路径部署填 `/inspect/`（尾斜杠可省略） | `/inspect/` |
+| `VITE_DEV_PORT` | dev server 监听端口 | `5173` |
+| `VITE_PROXY_TARGET` | dev server 代理目标（后端地址） | `http://127.0.0.1:8000` |
+
+约定：
+
+- 同一份配置同时供 `npm run dev` 与 `npm run build` 使用，本地开发与构建产出走同一套规则，
+  校验失败会直接指出缺的是哪个键、或哪个键不合法，补齐后重试即可，不需要回改代码。
+- 接口前缀只在配置里维护一份：页面里写 `/boiler` 这样的相对路径，由 `src/api/client.ts`
+  统一拼上 `VITE_API_PREFIX`；开发态由 dev server 代理到 `VITE_PROXY_TARGET`，
+  生产态由同前缀的反向代理转发。
+- 部署到子路径时，静态资源路径与 vue-router 的 base 都取 `VITE_BASE`，
+  左侧导航与页面布局不会再错位。
+- 业务模块清单（左侧导航、运营概览模块行）以 `frontend/src/config/modules.ts` 为唯一来源，
+  新增/下线模块只改这一处。
 
 ## 业务模块
 

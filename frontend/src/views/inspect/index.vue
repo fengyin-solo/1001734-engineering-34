@@ -65,11 +65,11 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
-import { request } from '@/api/client'
+import { apiUrl, request } from '@/api/client'
 
 type Row = Record<string, string | number | null>
 
-const ENDPOINT = '/api/inspect'
+const ENDPOINT = '/inspect'
 const columns = ["检验编号", "检验对象", "检验类别", "检验机构", "计划检验日", "检验人员", "检验日期", "检验状态"]
 const actions = ["提交报检", "确认出具", "退回重检"]
 const statuses = ["待报检", "检验中", "已出具", "已退回"]
@@ -87,7 +87,7 @@ function resetFilters() {
 }
 
 function exportRows() {
-  window.open(`${ENDPOINT}/export`, '_blank')
+  window.open(apiUrl(`${ENDPOINT}/export`), '_blank')
 }
 
 function openCreate() {
